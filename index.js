@@ -12,7 +12,7 @@ const multer = require('multer');
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads/');
+    cb(null, './public/');
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -71,7 +71,7 @@ app.post('/upload', (req, res) => {
 });
 
 app.get('/file', async (req, res) => {
-  res.sendFile(path.join(__dirname, 'uploads', 'index.txt'));
+  res.sendFile(path.join(__dirname, 'public', 'index.txt'));
 });
 
 // app.get("/test", apiLimiter, (req, res) => {
