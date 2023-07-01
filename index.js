@@ -59,10 +59,10 @@ app.post('/upload', (req, res) => {
   multerRouter(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      res.send({ message: 'Multer Error', err });
+      res.send({ message: 'Multer Error', err: err.message });
     } else if (err) {
       // An unknown error occurred when uploading.
-      res.send({ message: 'Multer upload Error', err });
+      res.send({ message: 'Multer upload Error', err: err.message });
     }
 
     console.log(req.file);
