@@ -1,55 +1,103 @@
-const bcrypt = require("bcrypt")
-const User = require("../model/index")
-const rateLimit = require('express-rate-limit')
-
+const bcrypt = require('bcrypt');
+const User = require('../model/index');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+const createError = require('http-errors');
+const Joi = require('joi');
 
 const is_required = (req, res, next) => {
-    const cookie = req.cookies?.['jwt']
-    try {
-        if (!cookie) {
-            // return res.status(400).send({ message: "permission denied login to continue" })
-            return res.redirect("/login")
-        }
-        req.userId = cookie
-        next()
-    } catch (error) {
-        throw new Error(error)
+  try {
+    const headers =
+      req.headers['Authorization'] || req.headers['authorization'];
+    const cookie = req.cookies;
+
+    if (!cookie || !headers) {
+      return res.status(403).json(createError(401, 'Unauthorized'));
     }
-}
+    const token = headers.split(' ')[1];
+    req.payload = token;
 
-exports.hashpassword = async (payload) => {
-    try {
-        const salt = await bcrypt.genSalt(10)
-        const compare = await bcrypt.hash(payload, salt)
-        return compare
-    } catch (error) {
-        throw new Error(error)
-    }
-}
+    next();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
+exports.hashpassword = async (string) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const compare = await bcrypt.hash(string, salt);
+    return compare;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
-exports.comparePassword = async (payload, encrypted) => {
-    try {
-        const compare = await bcrypt.compare(payload, encrypted)
-        return compare
-    } catch (error) {
-        throw new Error(error)
-    }
-}
+exports.comparePassword = async (string, encrypted) => {
+  try {
+    const compare = await bcrypt.compare(string, encrypted);
+    return compare;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
+exports.validateSchema = async (payload, schema) => {
+  try {
+    let options = {
+      abortEarly: false,
+    };
 
-// exports.sensitiveRateLimiter = rateLimit({
-//     windowMs: 15 * 60 * 1000, // 15 minutes
-//     max: 50, // Limit each IP to 50 requests per `window` (here, per 15 minutes)
-//     message: 'Too requests from this IP, please try again after 15 minutes',
-//     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-//     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-// })
+    const check = await schema.validateAsync(payload, options);
 
-// exports.generalRateLimiter = rateLimit({
-//     windowMs: 60 * 60 * 1000, // 1 hr
-//     max: 100, // Limit each IP to 100 requests per `window` (here, per 1 hour)
-//     message: 'Too many requests from this IP, please try again after an hour',
-//     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-//     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-// })
+    return [null, check];
+  } catch (error) {
+    return [error];
+  }
+};
+
+exports.generalRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hr
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 1 hour)
+  message: 'Too many requests from this IP, please try again after an hour',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: true, // Disable the `X-RateLimit-*` headers
+});
+
+exports.signAccessToken = (payload) => {
+  return new Promise((resolve, reject) => {
+    const payload = {};
+    const secret = process.env.ACCESS_TOKEN_SECRET;
+    
+    const options = {
+      expiresIn: '15s',
+      issuer: 'localhost',
+    };
+
+    jwt.sign(payload, secret, options, (err, token) => {
+      if (err) {
+        console.log(err.message);
+        reject();
+      }
+
+      return resolve(token);
+    });
+  });
+};
+
+exports.verifyAccessToken = (token) => {
+  return new Promise((resolve, reject) => {
+    const secret = process.env.ACCESS_TOKEN_SECRET;
+
+    jwt.sign(token, secret, (err, token) => {
+      if (err) {
+        console.log(err.message);
+        reject();
+      }
+
+      return resolve(token);
+    });
+  });
+};
+
+exports.isAdmin = (req, res, next) => {};

@@ -1,9 +1,6 @@
 const mongoose = require("mongoose")
 
-let mongodbAtlas = `mongodb+srv://${process.env.ACCOUNT_USERNAME}:${process.env.DB_PASSWORD}@cluster0.gwvtatj.mongodb.net/${process.env.DB_NAME}`;
-let localConnection = `mongodb://0.0.0.0:27017/${process.env.DB_NAME}`;
-
-const connectionUrl = process.env.NODE_ENV === "development" ? localConnection : mongodbAtlas
+const connectionUrl = process.env.NODE_ENV === "development" ? process.env.MONGODB_COMPASS_URL : process.env.MONGODB_ATLAS_URL
 
 const connectDb = async (cb) => {
     try {
