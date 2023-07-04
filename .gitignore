@@ -3,5 +3,4 @@ node_modules
 .rest
 test.js
 uploads
-public/*.js
 public/*.zip
