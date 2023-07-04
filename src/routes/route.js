@@ -9,7 +9,7 @@ const Product = require('../model/product');
 const {
   hashpassword,
   signAccessToken,
-  validateSchema,
+  sanitizeRequest,
 } = require('../helper/index');
 
 const {
@@ -22,7 +22,7 @@ const {
 // register a new entity
 router.post('/register', async (req, res) => {
   try {
-    let [error, value] = await validateSchema(req.body, RegistrationSchema);
+    let [error, value] = await sanitizeRequest(req.body, RegistrationSchema);
 
     if (error) {
       // TODO make a better schema validation res message
@@ -55,19 +55,19 @@ router.post('/register', async (req, res) => {
 
     res
       .status(200)
-      .json({ status: true, message: 'registration success', data: null });
+      .json({ success: true, message: 'registration success', data: null });
   } catch (error) {
     console.log(error);
     res
       .status(500)
-      .json({ status: false, message: 'Internal server error', data: null });
+      .json({ success: false, message: 'Internal server error', data: null });
   }
 });
 
 // issue a secure httponly cookie in a jwt only access token
 router.post('/login', async (req, res) => {
   try {
-    let [error, value] = await validateSchema(req.body, LoginSchema);
+    let [error, value] = await sanitizeRequest(req.body, LoginSchema);
 
     if (error) {
       // TODO make a better schema validation res message
@@ -79,7 +79,10 @@ router.post('/login', async (req, res) => {
     if (!doesUserExist) {
       return res
         .status(401)
-        .json({ status: false, message: 'Unauthorized, register to continue' });
+        .json({
+          success: false,
+          message: 'Unauthorized, register to continue',
+        });
     }
 
     // res.setHeader("Authorization", `Bearer ${access_token}`)
@@ -91,12 +94,12 @@ router.post('/login', async (req, res) => {
     console.log(error);
     res
       .status(500)
-      .json({ status: false, message: 'Internal server error', data: null });
+      .json({ success: false, message: 'Internal server error', data: null });
   }
 });
 
 // issue a refresh token here require access token and login info to issue a refresh token
-router.post('/refresh');
+router.post('/refresh', async (req, res) => {});
 
 // allow only admin to upload only zip files
 router.post('/upload', (req, res) => {
@@ -109,13 +112,13 @@ router.post('/upload', (req, res) => {
         console.log(err.message);
         return res
           .status(400)
-          .send({ status: false, message: 'File Multer Error', data: null });
+          .send({ success: false, message: 'File Multer Error', data: null });
       } else if (err) {
         // An unknown error occurred when uploading.
         console.log(err.message);
         return res
           .status(400)
-          .send({ status: false, message: 'File upload Error', data: null });
+          .send({ success: false, message: 'File upload Error', data: null });
       }
 
       const { destination, filename } = req.file;
@@ -131,21 +134,21 @@ router.post('/upload', (req, res) => {
 
       res
         .status(200)
-        .send({ status: true, message: 'file upload success', data: null });
+        .send({ success: true, message: 'file upload success', data: null });
     } catch (error) {
       console.log(error);
       res
         .status(500)
-        .json({ status: false, message: 'Internal server error', data: null });
+        .json({ success: false, message: 'Internal server error', data: null });
     }
   });
 });
 
-// download a file
+// Get archive file
 router.post('/products/:id', async (req, res) => {
   try {
     const productId = req.params.productId;
-    const [notValid, value] = await validateSchema(productId, ObjectIdSchema);
+    const [notValid, value] = await sanitizeRequest(productId, ObjectIdSchema);
 
     if (notValid) {
       return res
@@ -195,7 +198,7 @@ router.post('/products/:id', async (req, res) => {
 router.post('/products', async (req, res) => {
   try {
     const RequestQuery = req.query;
-    const [notValid, value] = validateSchema(RequestQuery, PaginationSchema);
+    const [notValid, value] = sanitizeRequest(RequestQuery, PaginationSchema);
 
     if (notValid) {
       return res
@@ -215,9 +218,14 @@ router.post('/products', async (req, res) => {
         .json({ status: true, message: 'No product found', data: null });
     }
 
+    const response = {
+      products,
+      pageCount: productCount,
+    };
+
     res
       .status(200)
-      .json({ status: true, message: 'All products returned', data: products });
+      .json({ status: true, message: 'All products returned', data: response });
   } catch (error) {
     console.log(error);
     res

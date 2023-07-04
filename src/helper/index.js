@@ -42,20 +42,6 @@ exports.comparePassword = async (string, encrypted) => {
   }
 };
 
-exports.validateSchema = async (payload, schema) => {
-  try {
-    let options = {
-      abortEarly: false,
-    };
-
-    const check = await schema.validateAsync(payload, options);
-
-    return [null, check];
-  } catch (error) {
-    return [error];
-  }
-};
-
 exports.generalRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hr
   max: 100, // Limit each IP to 100 requests per `window` (here, per 1 hour)
@@ -68,7 +54,7 @@ exports.signAccessToken = (payload) => {
   return new Promise((resolve, reject) => {
     const payload = {};
     const secret = process.env.ACCESS_TOKEN_SECRET;
-    
+
     const options = {
       expiresIn: '15s',
       issuer: 'localhost',
@@ -98,6 +84,20 @@ exports.verifyAccessToken = (token) => {
       return resolve(token);
     });
   });
+};
+
+exports.sanitizeRequest = async (payload, schema) => {
+  try {
+    let options = {
+      abortEarly: false,
+    };
+
+    const check = await schema.validateAsync(payload, options);
+
+    return [null, check];
+  } catch (error) {
+    return [error];
+  }
 };
 
 exports.isAdmin = (req, res, next) => {};
