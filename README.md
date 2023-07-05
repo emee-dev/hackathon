@@ -54,7 +54,7 @@ With CodeVault, we envision a future where student freelancers can focus on honi
  Usage
 To start using CodeVault, please follow these steps:
 
-1. Sign up for an account on [CodeVault.com](https://codevault.com).
+1. Sign up for an account.
 2. As a seller, upload your projects in zip format with a brief description.
 3. As a buyer, explore the available projects and purchase the ones you find interesting.
 4. After purchase, you'll receive the zip file with the encrypted password to access the source code.
