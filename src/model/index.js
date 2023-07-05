@@ -1,4 +1,9 @@
 const mongoose = require('mongoose');
+let defaultRole = process.env.CLIENT_ROLE;
+
+if (!defaultRole) {
+  throw new Error('Default role is empty');
+}
 
 const entitySchema = new mongoose.Schema({
   firstname: {
@@ -24,7 +29,10 @@ const entitySchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: 'clueless',
+    default: defaultRole,
+  },
+  refreshToken: {
+    type: String,
   },
   createdAt: {
     type: Date,

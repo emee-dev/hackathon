@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Parcel Sandbox</title>
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+  <form id="paymentForm">
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email-address" required />
+    </div>
+    <div class="form-group">
+      <label for="first-name">First Name</label>
+      <input type="text" id="first-name" />
+    </div>
+    <div class="form-group">
+      <label for="last-name">Last Name</label>
+      <input type="text" id="last-name" />
+    </div>
+    <div class="form-submit">
+      <button type="submit" onclick="payWithPaystack()">Pay</button>
+    </div>
+  </form>
+
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+
+
+
+
+  <script>
+    /*     
+    Important notes
+    1. The key field here takes your Paystack _public_ key.
+    2. The amount field has to be converted to the lowest currency unit by multiplying the value by 100. So if you wanted to charge N50 or $50 or GHS50, you have to multiply 50 * 100 and pass 5000 in the amount field.
+    3. It's ideal to generate a unique reference from your system for every transaction to avoid duplicate attempts.
+    4. The callback method is called when payment has been completed successfully on the Paystack checkout. See the next section to see for how to handle the callback.
+    5. The onClose method is called if the user closes the modal without completing payment. 
+    */
+
+
+    const paymentForm = document.getElementById("paymentForm");
+    paymentForm.addEventListener("submit", payWithPaystack, false);
+
+    function payWithPaystack(e) {
+      e.preventDefault();
+
+      let handler = PaystackPop.setup({
+        key: "pk_test_1ac7f6a6050a2a194bec180c910bd836f11cf5dc", // Replace with your public key
+        email: document.getElementById("email-address").value,
+        amount: 5000 * 100,
+        ref: "" + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+        // label: "Optional string that replaces customer email"
+        onClose: function () {
+          alert("Window closed.");
+        },
+        callback: function (response) {
+          //   { 
+          //     reference: '640924116', 
+          //   trans: '2929235123', 
+          //   status: 'success', 
+          //   message: 'Approved', 
+          //   transaction: '2929235123' 
+          // }
+          let {
+            reference,
+            trans,
+            status,
+            message,
+            transaction } = response
+          // let message = "Payment complete! Reference: " + response.reference;
+          alert(message);
+        }
+      });
+
+      handler.openIframe();
+    }
+  </script>
+</body>
+
+</html>
