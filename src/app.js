@@ -9,7 +9,10 @@ const compression = require('compression');
 const helmet = require('helmet');
 const Routes = require('./routes/route');
 
-const { generalRateLimiter } = require('./helper');
+const {
+  allowedMethodsMiddleware,
+  generalRateLimiter,
+} = require('./middleware/middleware');
 
 app.use(
   helmet({
@@ -27,6 +30,7 @@ app.use(
 
 // Set the X-Frame-Options header to DENY to prevent all framing
 app.use(helmet.frameguard({ action: 'deny' }));
+
 app.use(compression());
 
 app.use(
@@ -43,23 +47,37 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cookieParser());
+app.use(allowedMethodsMiddleware);
+app.use(generalRateLimiter);
 
 // useTreblle(app, {
 //   apiKey: process.env.TREBLLE_API_KEY,
 //   projectId: process.env.TREBLLE_PROJECT_ID,
 // });
 
-app.get('/', generalRateLimiter, (req, res) => {
-  console.log(req.secure);
+app.get('/', (req, res) => {
   res.send({ message: 'This is working' });
 });
 
 app.use('/api/v1/', Routes);
 
+// Catch-all route for handling unsupported methods
+app.all('*', (req, res) => {
+  return res.status(405).send({
+    success: false,
+    message: 'Method Not Allowed',
+    data: null,
+  });
+});
+
 // Error handler middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
-  res.status(500).json({ error: 'Something went wrong.' });
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong.',
+    data: null,
+  });
 });
 
 module.exports = app;
