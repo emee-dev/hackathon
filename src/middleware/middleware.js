@@ -35,9 +35,9 @@ exports.generalRateLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, // 30 minutes
   max: 50, // Limit each IP to 100 requests per `window` (here, every 30 minutes)
   message: (req, res) => {
-    res.status(429).json({
+    res.status(429).header('Content-Type', 'application/json').json({
       sucess: false,
-      message: 'Too many requests from this IP, please try again after an hour',
+      message: 'Too Many Requests, please try again after an hour',
       data: null,
     });
   },
@@ -102,7 +102,7 @@ exports.idempotentMiddleware = async (req, res, next) => {
       return res
         .status(400)
         .header('Content-Type', 'application/json')
-        .json({ status: false, message: notValid, data: null });
+        .json({ success: false, message: notValid, data: null });
     }
 
     const cachedData = idempotentCache.get(idempotentKey);

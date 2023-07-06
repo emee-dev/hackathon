@@ -13,7 +13,6 @@ const Product = require('../model/product');
 const {
   RegistrationSchema,
   LoginSchema,
-  ObjectIdSchema,
   PaginationSchema,
 } = require('../validation/schema');
 
@@ -187,7 +186,7 @@ exports.refreshTokenController = async (req, res) => {
 
   // Update the user's refresh token in the database
   doesUserExist.refreshToken = newRefreshToken;
-  const result = await doesUserExist.save();
+  await doesUserExist.save();
 
   // Send the response with roles and the new access token
   return res
@@ -195,7 +194,7 @@ exports.refreshTokenController = async (req, res) => {
     .header('Content-Type', 'application/json')
     .json({
       success: true,
-      message: 'New access token and refresh token generated',
+      message: 'Token refreshed successfully',
       data: {
         accessToken: accessToken,
         refreshToken: newRefreshToken,
@@ -211,17 +210,19 @@ exports.productUploadController = (req, res) => {
       if (err instanceof multer.MulterError) {
         // A Multer error occurred when uploading.
         console.log(err.message);
-        return res
-          .status(400)
-          .header('Content-Type', 'application/json')
-          .send({ success: false, message: 'File Multer Error', data: null });
+        return res.status(422).json({
+          success: false,
+          message: 'Unprocessable Entity - File Upload Error',
+          data: null,
+        });
       } else if (err) {
         // An unknown error occurred when uploading.
         console.log(err.message);
-        return res
-          .status(400)
-          .header('Content-Type', 'application/json')
-          .send({ success: false, message: 'File upload Error', data: null });
+        return res.status(500).json({
+          success: false,
+          message: 'Internal Server Error - File Upload Error',
+          data: null,
+        });
       }
 
       const { destination, filename } = req.file;
