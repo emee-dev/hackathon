@@ -110,7 +110,7 @@ exports.signRefreshToken = (payload) => {
     const { _id, email, role } = payload;
     const secret = process.env.REFRESH_TOKEN_SECRET;
     if (!secret)
-      throw new Error('Access Token Secret Env Variable is required');
+      throw new Error('Refresh Token Secret Env Variable is required');
 
     const options = {
       expiresIn: '30m',
@@ -133,7 +133,7 @@ exports.verifyRefreshToken = (token) => {
   return new Promise((resolve, reject) => {
     const secret = process.env.REFRESH_TOKEN_SECRET;
     if (!secret)
-      throw new Error('Access Token Secret Env Variable is required');
+      throw new Error('Refresh Token Secret Env Variable is required');
 
     jwt.verify(token, secret, (err, token) => {
       if (err) {

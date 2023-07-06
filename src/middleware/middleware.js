@@ -51,7 +51,7 @@ exports.is_required = async (req, res, next) => {
       req.headers['Authorization'] || req.headers['authorization'];
 
     if (!headers) {
-      return res.status(401).json({
+      return res.status(401).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Unauthorized - Missing Authorization header',
         data: null,
@@ -61,7 +61,7 @@ exports.is_required = async (req, res, next) => {
     const [bearer, token] = headers.split(' ');
 
     if (bearer.toLowerCase() !== 'bearer' || !token) {
-      return res.status(401).json({
+      return res.status(401).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Unauthorized - Invalid or Missing Bearer Token',
         data: null,
@@ -70,7 +70,7 @@ exports.is_required = async (req, res, next) => {
 
     const decoded = await verifyAccessToken(token);
     if (!decoded) {
-      return res.status(401).json({
+      return res.status(401).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Unauthorized - Invalid or Expired Access token',
         data: null,
@@ -82,7 +82,7 @@ exports.is_required = async (req, res, next) => {
   } catch (error) {
     console.error(error);
 
-    return res.status(500).json({
+    return res.status(500).header('Content-Type', 'application/json').json({
       success: false,
       message: 'Internal Server Error',
       data: null,
@@ -101,6 +101,7 @@ exports.idempotentMiddleware = async (req, res, next) => {
     if (notValid) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: notValid, data: null });
     }
 
@@ -108,7 +109,7 @@ exports.idempotentMiddleware = async (req, res, next) => {
 
     if (cachedData !== undefined) {
       // If the idempotent key exists in the cache, reject the request
-      return res.status(409).json({
+      return res.status(409).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Duplicate request. This request has already been processed.',
         data: null,
@@ -123,7 +124,7 @@ exports.idempotentMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Unexpected error:', error);
-    return res.status(500).json({
+    return res.status(500).header('Content-Type', 'application/json').json({
       success: false,
       message: 'An unexpected error occurred. Please try again later.',
       data: null,
@@ -143,7 +144,7 @@ exports.verifyPaymentReference = async (req, res, next) => {
 
     // Validate the payment reference using validator
     if (isInvalid) {
-      return res.status(400).json({
+      return res.status(400).header('Content-Type', 'application/json').json({
         success: false,
         message:
           'Invalid payment reference. Please provide a valid payment reference.',
@@ -165,7 +166,7 @@ exports.verifyPaymentReference = async (req, res, next) => {
       response = await axios.request(options);
     } catch (error) {
       console.error('Error verifying payment with Paystack:', error.message);
-      return res.status(500).json({
+      return res.status(500).header('Content-Type', 'application/json').json({
         success: false,
         message:
           'An error occurred while verifying payment. Please try again later.',
@@ -182,7 +183,7 @@ exports.verifyPaymentReference = async (req, res, next) => {
     } = response.data.data;
 
     if (status !== 'success') {
-      return res.status(402).json({
+      return res.status(402).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Payment is required to access this resource.',
         data: null,
@@ -200,7 +201,7 @@ exports.verifyPaymentReference = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Unexpected error:', error);
-    return res.status(500).json({
+    return res.status(500).header('Content-Type', 'application/json').json({
       success: false,
       message: 'An unexpected error occurred. Please try again later.',
       data: null,
@@ -213,7 +214,7 @@ exports.isAdmin = (req, res, next) => {
   let defaultRole = process.env.CLIENT_ROLE;
 
   if (!adminRole && adminRole !== defaultRole) {
-    return res.status(401).json({
+    return res.status(401).header('Content-Type', 'application/json').json({
       success: false,
       message: 'Unauthorized',
       data: null,
