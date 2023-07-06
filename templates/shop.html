@@ -4,6 +4,9 @@
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.css" integrity="sha512-tdyzfjYDk2OR9L10jvzzuGUB0Rvl5fyMW/Z8yfbYyyENfuXxtcDtEq7d/PdiA0hzQzXjWwvZasjEp8Joli2tkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    .card-img{
+      height: 20rem !important;
+    }
     .row {
       display: flex;
       flex-wrap: wrap;
@@ -13,7 +16,6 @@
     .col {
       flex: 0 0 calc(33.33% - 20px);
       margin-bottom: 20px;
-      background-color: #f2f2f2;
       padding: 10px;
     }
 
@@ -51,70 +53,72 @@
   </div>
 
   <!-- Cards grid -->
-  <div class="grid-container">
-    <div class="grid-item">
-      <div class="ui card">
-        <div class="image">
-          <img src="../static/banana.jpg">
-        </div>
-        <div class="content">
-          <a class="header">Banana</a>
-          <div class="meta">
-            <span class="date">In stock</span>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/banana.jpg">
           </div>
-          <div class="description">
-            Bananas: Nature's Golden Goodness!
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
           </div>
-        </div>
-        <div class="extra content">
-          <a class="ui button black">
-            <i class="cart icon"></i>
-            Add to cart
-          </a>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
-      <div class="ui card">
-        <div class="image">
-          <img src="../static/banana.jpg">
-        </div>
-        <div class="content">
-          <a class="header">Banana</a>
-          <div class="meta">
-            <span class="date">In stock</span>
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/strawberries.jpg">
           </div>
-          <div class="description">
-            Bananas: Nature's Golden Goodness!
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
           </div>
-        </div>
-        <div class="extra content">
-          <a class="ui button black">
-            <i class="cart icon"></i>
-            Add to cart
-          </a>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
-      <div class="ui card">
-        <div class="image">
-          <img src="../static/banana.jpg">
-        </div>
-        <div class="content">
-          <a class="header">Banana</a>
-          <div class="meta">
-            <span class="date">In stock</span>
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/blueberries.jpg">
           </div>
-          <div class="description">
-            Bananas: Nature's Golden Goodness!
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
           </div>
-        </div>
-        <div class="extra content">
-          <a class="ui button black">
-            <i class="cart icon"></i>
-            Add to cart
-          </a>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
         </div>
       </div>
     </div>
