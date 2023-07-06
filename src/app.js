@@ -50,10 +50,10 @@ app.use(cookieParser());
 app.use(allowedMethodsMiddleware);
 app.use(generalRateLimiter);
 
-// useTreblle(app, {
-//   apiKey: process.env.TREBLLE_API_KEY,
-//   projectId: process.env.TREBLLE_PROJECT_ID,
-// });
+useTreblle(app, {
+  apiKey: process.env.TREBLLE_API_KEY,
+  projectId: process.env.TREBLLE_PROJECT_ID,
+});
 
 app.get('/', (req, res) => {
   res.send({ message: 'This is working' });
