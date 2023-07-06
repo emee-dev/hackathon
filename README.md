@@ -13,7 +13,7 @@
 5. [Inspiration](#inspiration)
 6. [Usage](#usage)
 7. [Installation](#installation)
-8. [Import Request Collection](Importing Request Collection into Insomnia)
+8. [Import Request Collection](#Request Collection into Insomnia)
 9. [Environment Variables](#environment-variables)
 10. [Support](#support)
 11. [Contributing](#contributing)
@@ -112,9 +112,7 @@ Make sure to set up the following environment variables for CodeVault to work co
 ##### JWT Secret
 
 - ACCESS_TOKEN_SECRET= `<your_access_token_secret>`
-
 - REFRESH_TOKEN_SECRET= `<your_access_token_secret>`
-
 
 ##### ConvertApi Config
 
