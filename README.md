@@ -13,7 +13,7 @@
 5. [Inspiration](#inspiration)
 6. [Usage](#usage)
 7. [Installation](#installation)
-8. [Import Request Collection](#Request Collection into Insomnia)
+8. [Import Request Collection](#Request-Collection-into-Insomnia)
 9. [Environment Variables](#environment-variables)
 10. [Support](#support)
 11. [Contributing](#contributing)
