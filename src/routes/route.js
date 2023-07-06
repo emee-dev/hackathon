@@ -39,13 +39,6 @@ router.get(
 // list all uploaded files available for download
 router.get('/products/list', paginatedProductListController);
 
-// endpoint to validate source code license key jwt validity or expire and domain info
-router.post('/validate');
-
-// JWT Hash as License Key
-// {
-//     userId: "12992020222",
-//     domain: "http://localhost:3000",
-// }
+// TODO endpoint to validate source code license key domain info
 
 module.exports = router;

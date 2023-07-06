@@ -6,11 +6,15 @@ const {
   signRefreshToken,
   verifyRefreshToken,
   multerRouter,
+  convertFile,
 } = require('../helper/index');
 const multer = require('multer');
 
 const User = require('../model/index');
 const Product = require('../model/product');
+
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const {
   RegistrationSchema,
@@ -330,7 +334,10 @@ exports.archiveDownloadController = async (req, res) => {
 exports.paginatedProductListController = async (req, res) => {
   try {
     const RequestQuery = req.query;
-    const [notValid, value] = sanitizeRequest(RequestQuery, PaginationSchema);
+    const [notValid, value] = await sanitizeRequest(
+      RequestQuery,
+      PaginationSchema,
+    );
 
     if (notValid) {
       return res

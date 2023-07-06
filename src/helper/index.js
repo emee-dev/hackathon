@@ -186,9 +186,9 @@ exports.convertFile = async (fileName, archivePassword) => {
       ),
     );
 
-    process.env.NODE_ENV === 'development'
-      ? await Promise.resolve(result.saveFiles(`${publicFolder}/temp`))
-      : null;
+    // process.env.NODE_ENV === 'development'
+    //   ? await Promise.resolve(result.saveFiles(`${publicFolder}/temp/`))
+    //   : null;
 
     const archiveDownloadUrl = result.file.url;
     return [null, archiveDownloadUrl];

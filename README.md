@@ -13,10 +13,11 @@
 5. [Inspiration](#inspiration)
 6. [Usage](#usage)
 7. [Installation](#installation)
-8. [Environment Variables](#environment-variables)
-9. [Support](#support)
-10. [Contributing](#contributing)
-11. [License](#license)
+8. [Import Request Collection](Importing Request Collection into Insomnia)
+9. [Environment Variables](#environment-variables)
+10. [Support](#support)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ## Introduction
 
@@ -69,6 +70,23 @@ To set up the project locally for development, follow these steps:
 4. Start the development server: `npm run dev`
 
 You are now ready to work on the CodeVault project locally. Happy coding!
+
+## Request Collection into Insomnia
+
+To get started with the hackathon, follow these steps to import the request collection into Insomnia:
+
+1. Make sure you have [Insomnia](https://insomnia.rest/) installed on your machine.
+2. Locate the request collection file in the Insomnia directory. It should be located in the root folder of your project.
+3. Copy the request collection file (usually with a `.json` extension) from the Insomnia directory.
+4. Open Insomnia on your machine.
+5. In Insomnia, go to `File` > `Import Data` > `From File...`.
+6. Choose the copied request collection file from the Insomnia directory.
+7. Insomnia will import the request collection and display it in the workspace.
+8. You can now explore the imported request collection, make requests, and test your hackathon project using Insomnia.
+
+Please note that the above instructions assume you have the request collection file ready in the Insomnia directory. Make sure to follow any additional project-specific instructions provided by your hackathon organizers.
+
+If you encounter any issues or need further assistance, feel free to reach out for support. Good luck with your hackathon!
 
 ## Environment Variables
 

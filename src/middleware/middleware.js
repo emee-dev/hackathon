@@ -1,5 +1,3 @@
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 const axios = require('axios').default;
 
 const NodeCache = require('node-cache');
@@ -135,9 +133,9 @@ exports.idempotentMiddleware = async (req, res, next) => {
 exports.verifyPaymentReference = async (req, res, next) => {
   try {
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-    const paymentReference = req.query?.payment_reference;
+    const paymentReference = req.query;
 
-    const [isInvalid, value] = sanitizeRequest(
+    const [isInvalid, value] = await sanitizeRequest(
       paymentReference,
       PaystackReferenceSchema,
     );
@@ -146,15 +144,14 @@ exports.verifyPaymentReference = async (req, res, next) => {
     if (isInvalid) {
       return res.status(400).header('Content-Type', 'application/json').json({
         success: false,
-        message:
-          'Invalid payment reference. Please provide a valid payment reference.',
+        message: isInvalid,
         data: null,
       });
     }
 
     const options = {
       method: 'GET',
-      url: `${PAYSTACK_BASE_URL}/transaction/verify/${value}`,
+      url: `${PAYSTACK_BASE_URL}/transaction/verify/${value.payment_reference}`,
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -165,7 +162,6 @@ exports.verifyPaymentReference = async (req, res, next) => {
     try {
       response = await axios.request(options);
     } catch (error) {
-      console.error('Error verifying payment with Paystack:', error.message);
       return res.status(500).header('Content-Type', 'application/json').json({
         success: false,
         message:
@@ -200,7 +196,6 @@ exports.verifyPaymentReference = async (req, res, next) => {
     await paymentTransaction.save();
     next();
   } catch (error) {
-    console.error('Unexpected error:', error);
     return res.status(500).header('Content-Type', 'application/json').json({
       success: false,
       message: 'An unexpected error occurred. Please try again later.',
@@ -213,11 +208,9 @@ exports.isAdmin = (req, res, next) => {
   let adminRole = process.env.ADMIN_ROLE;
   let defaultRole = process.env.CLIENT_ROLE;
 
-  /**
-   * 1. Add ADMIN_ROLE in your production env
-   * 2. Register using an api client like Insommnia using role as
-   * 3. 
-   */
+  // Add ADMIN_ROLE in your production env
+  // Register using an api client like Insommnia using role value as ADMIN_ROLE
+  // TODO add later
 
   if (!adminRole && adminRole !== defaultRole) {
     return res.status(401).header('Content-Type', 'application/json').json({
