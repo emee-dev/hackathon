@@ -213,6 +213,12 @@ exports.isAdmin = (req, res, next) => {
   let adminRole = process.env.ADMIN_ROLE;
   let defaultRole = process.env.CLIENT_ROLE;
 
+  /**
+   * 1. Add ADMIN_ROLE in your production env
+   * 2. Register using an api client like Insommnia using role as
+   * 3. 
+   */
+
   if (!adminRole && adminRole !== defaultRole) {
     return res.status(401).header('Content-Type', 'application/json').json({
       success: false,

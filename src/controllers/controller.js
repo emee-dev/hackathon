@@ -45,13 +45,18 @@ exports.registerController = async (req, res) => {
       throw new Error('Error hashing password');
     }
 
-    const newRecord = new User({
+    const userData = {
       firstname,
       lastname,
       email,
       password: hashedPassword,
-    });
-
+    };
+    
+    if (role) {
+      userData.role = role;
+    }
+    
+    const newRecord = new User(userData);
     await newRecord.save();
 
     res

@@ -36,6 +36,9 @@ exports.RegistrationSchema = Joi.object({
       'string.max': 'Password cannot exceed 30 characters.',
       'any.required': 'Password is required.',
     }),
+  role: Joi.string().optional().allow(null).messages({
+    'string.base': 'Role must be a string.',
+  }),
 });
 
 exports.LoginSchema = Joi.object({
