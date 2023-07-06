@@ -55,7 +55,7 @@ With CodeVault, we envision a future where student freelancers can focus on honi
 To start using CodeVault, please follow these steps:
 
 1. Sign up for an account.
-2. As a seller, upload your projects in zip format with a brief description.
+2. As a seller, upload your projects in zip format.
 3. As a buyer, explore the available projects and purchase the ones you find interesting.
 4. After purchase, you'll receive the zip file with the encrypted password to access the source code.
 
@@ -70,7 +70,6 @@ To set up the project locally for development, follow these steps:
 
 You are now ready to work on the CodeVault project locally. Happy coding!
 
-
 ## Environment Variables
 
 Make sure to set up the following environment variables for CodeVault to work correctly:
@@ -78,16 +77,18 @@ Make sure to set up the following environment variables for CodeVault to work co
 ##### MongoDB Database Config
 
 [MongoDB Compass Download URL](https://www.mongodb.com/try/download/compass)
-- MONGODB_COMPASS_URL= `<your_mongodb_compass_url>` 
+
+- MONGODB_COMPASS_URL= `<your_mongodb_compass_url>`
 
 [MongoDB Atlas URL](https://cloud.mongodb.com/v2/632f587e3301614db483ba98#/clusters)
-- MONGODB_ATLAS_URL= `<your_mongodb_atlas_url>` 
+
+- MONGODB_ATLAS_URL= `<your_mongodb_atlas_url>`
 
 ##### Treblle Config
 
 [Treblle API Key](https://app.treblle.com/users/profile)
 
-- TREBLLE_API_KEY= `<your_treblle_api_key>` 
+- TREBLLE_API_KEY= `<your_treblle_api_key>`
 - TREBLLE_PROJECT_ID= `<your_treblle_project_id>`
 
 ##### JWT Secret
@@ -102,14 +103,14 @@ Make sure to set up the following environment variables for CodeVault to work co
 
 [ConvertApi Authentication](https://www.convertapi.com/cara-a/auth)
 
-- CONVERT_API_KEY= `<your_convert_api_key>` 
+- CONVERT_API_KEY= `<your_convert_api_key>`
 - CONVERT_API_SECRET= `<your_convert_api_secret>`
 
 ##### Paystack Config
 
 [Paystack Dashboard](https://dashboard.paystack.com/#/settings/developers)
 
-- PAYSTACK_SECRET_KEY= `<your_paystack_secret_key>` 
+- PAYSTACK_SECRET_KEY= `<your_paystack_secret_key>`
 - PAYSTACK_PUBLIC_KEY= `<your_paystack_public_key>`
 
 Please ensure that you obtain the necessary credentials and replace the placeholders with your actual values for these environment variables.
