@@ -140,66 +140,75 @@ exports.loginController = async (req, res) => {
 };
 
 exports.refreshTokenController = async (req, res) => {
-  const headers = req.headers['Authorization'] || req.headers['authorization'];
+  try {
+    const headers =
+      req.headers['Authorization'] || req.headers['authorization'];
 
-  if (!headers) {
-    return res.status(401).header('Content-Type', 'application/json').json({
-      success: false,
-      message: 'Unauthorized - Missing Authorization header',
-      data: null,
-    });
+    if (!headers) {
+      return res.status(401).header('Content-Type', 'application/json').json({
+        success: false,
+        message: 'Unauthorized - Missing Authorization header',
+        data: null,
+      });
+    }
+
+    const [bearer, token] = headers.split(' ');
+
+    if (bearer.toLowerCase() !== 'bearer' || !token) {
+      return res.status(401).header('Content-Type', 'application/json').json({
+        success: false,
+        message: 'Unauthorized - Invalid or Missing Bearer Token',
+        data: null,
+      });
+    }
+
+    const doesUserExist = await User.findOne({ refreshToken: token });
+    if (!doesUserExist) {
+      return res.status(401).header('Content-Type', 'application/json').json({
+        success: false,
+        message: 'Unauthorized - Invalid Refresh Token',
+        data: null,
+      });
+    }
+
+    const decoded = await verifyRefreshToken(token);
+    if (!decoded) {
+      return res.status(403).header('Content-Type', 'application/json').json({
+        success: false,
+        message: 'Forbidden - Invalid or Expired Refresh token',
+        data: null,
+      });
+    }
+
+    // Generate a new access token
+    const accessToken = await signAccessToken(doesUserExist);
+
+    // Generate a new refresh token
+    const newRefreshToken = await signRefreshToken(doesUserExist);
+
+    // Update the user's refresh token in the database
+    doesUserExist.refreshToken = newRefreshToken;
+    await doesUserExist.save();
+
+    // Send the response with roles and the new access token
+    return res
+      .status(200)
+      .header('Content-Type', 'application/json')
+      .json({
+        success: true,
+        message: 'Token refreshed successfully',
+        data: {
+          accessToken: accessToken,
+          refreshToken: newRefreshToken,
+        },
+      });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .header('Content-Type', 'application/json')
+      .json({ success: false, message: 'Internal server error', data: null });
   }
-
-  const [bearer, token] = headers.split(' ');
-
-  if (bearer.toLowerCase() !== 'bearer' || !token) {
-    return res.status(401).header('Content-Type', 'application/json').json({
-      success: false,
-      message: 'Unauthorized - Invalid or Missing Bearer Token',
-      data: null,
-    });
-  }
-
-  const doesUserExist = await User.findOne({ refreshToken: token });
-  if (!doesUserExist) {
-    return res.status(401).header('Content-Type', 'application/json').json({
-      success: false,
-      message: 'Unauthorized - Invalid Refresh Token',
-      data: null,
-    });
-  }
-
-  const decoded = await verifyRefreshToken(token);
-  if (!decoded) {
-    return res.status(403).header('Content-Type', 'application/json').json({
-      success: false,
-      message: 'Forbidden - Invalid or Expired Refresh token',
-      data: null,
-    });
-  }
-
-  // Generate a new access token
-  const accessToken = await signAccessToken(doesUserExist);
-
-  // Generate a new refresh token
-  const newRefreshToken = await signRefreshToken(doesUserExist);
-
-  // Update the user's refresh token in the database
-  doesUserExist.refreshToken = newRefreshToken;
-  await doesUserExist.save();
-
-  // Send the response with roles and the new access token
-  return res
-    .status(200)
-    .header('Content-Type', 'application/json')
-    .json({
-      success: true,
-      message: 'Token refreshed successfully',
-      data: {
-        accessToken: accessToken,
-        refreshToken: newRefreshToken,
-      },
-    });
 };
 
 exports.productUploadController = (req, res) => {
