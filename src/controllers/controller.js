@@ -28,6 +28,7 @@ exports.registerController = async (req, res) => {
     }
 
     const { firstname, lastname, email, password } = value;
+    const role = value?.role;
 
     const isRegistered = await User.findOne({ email });
 
@@ -51,11 +52,11 @@ exports.registerController = async (req, res) => {
       email,
       password: hashedPassword,
     };
-    
+
     if (role) {
       userData.role = role;
     }
-    
+
     const newRecord = new User(userData);
     await newRecord.save();
 
