@@ -10,6 +10,7 @@ const helmet = require('helmet');
 const Routes = require('./routes/route');
 
 const {
+  corsOriginMiddleware,
   allowedMethodsMiddleware,
   generalRateLimiter,
 } = require('./middleware/middleware');
@@ -20,7 +21,11 @@ app.use(
       useDefaults: false,
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", 'example.com'],
+        scriptSrc: [
+          "'self'",
+          'http://localhost:7000',
+          process.env.ALLOWED_ORIGIN,
+        ],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
@@ -35,19 +40,19 @@ app.use(compression());
 
 app.use(
   cors({
-    // origin: ['https://example.com'], // Replace with specific domains.
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+    origin: [process.env.ALLOWED_ORIGIN, 'http://localhost:7000'],
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
     exposedHeaders: ['Content-Length', 'X-Request-ID'], // Specify exposed headers
     maxAge: 86400, // Set the Access-Control-Max-Age header for caching CORS options (in seconds)
-    //credentials: true, // Uncomment this line if you need to enable credentials (cookies, authorization headers, etc.)
   }),
 );
+
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cookieParser());
 app.use(allowedMethodsMiddleware);
+app.use(corsOriginMiddleware);
 app.use(generalRateLimiter);
 
 useTreblle(app, {
@@ -56,14 +61,17 @@ useTreblle(app, {
 });
 
 app.get('/', (req, res) => {
-  res.send({ message: 'This is working' });
+  res
+    .status(200)
+    .header('Content-Type', 'application/json')
+    .json({ success: true, message: 'This app is live and well', data: null });
 });
 
 app.use('/api/v1/', Routes);
 
 // Catch-all route for handling unsupported methods
 app.all('*', (req, res) => {
-  return res.status(405).send({
+  return res.status(405).header('Content-Type', 'application/json').send({
     success: false,
     message: 'Method Not Allowed',
     data: null,
@@ -73,7 +81,7 @@ app.all('*', (req, res) => {
 // Error handler middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
-  res.status(500).json({
+  res.status(500).header('Content-Type', 'application/json').json({
     success: false,
     message: 'Something went wrong.',
     data: null,

@@ -13,6 +13,8 @@ const {
 } = require('../validation/schema');
 const { verifyAccessToken, sanitizeRequest } = require('../helper/index');
 
+const allowedOrigins = [process.env?.ALLOWED_ORIGIN, 'http://localhost:7000'];
+
 exports.allowedMethodsMiddleware = (req, res, next) => {
   const allowedMethods = ['GET', 'POST'];
 
@@ -26,6 +28,14 @@ exports.allowedMethodsMiddleware = (req, res, next) => {
   }
 
   res.setHeader('Allow', allowedMethods.join(', '));
+  next();
+};
+
+exports.corsOriginMiddleware = (req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   next();
 };
 
