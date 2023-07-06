@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.css" integrity="sha512-tdyzfjYDk2OR9L10jvzzuGUB0Rvl5fyMW/Z8yfbYyyENfuXxtcDtEq7d/PdiA0hzQzXjWwvZasjEp8Joli2tkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .card-img{
+      height: 20rem !important;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .col {
+      flex: 0 0 calc(33.33% - 20px);
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .col {
+        flex: 0 0 calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .col {
+        flex: 0 0 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <div class="ui inverted menu" style="border-radius: 0; padding: 1rem;">
+    <a href="#" class="item"><h3>InTheMiddleOfNowhere</h3></a>
+    <div class="right menu">
+      <a class="item" href="#">Home</a>
+      <a class="item" href="#">Store</a>
+      <a class="item" href="#">Contact</a>
+      <div class="ui dropdown item">
+        Dropdown
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="#">Option 1</a>
+          <a class="item" href="#">Option 2</a>
+          <a class="item" href="#">Option 3</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/banana.jpg">
+          </div>
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
+          </div>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/strawberries.jpg">
+          </div>
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
+          </div>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ui card">
+          <div class="image">
+            <img class="card-img" src="../static/blueberries.jpg">
+          </div>
+          <div class="content">
+            <a class="header">Banana</a>
+            <div class="meta">
+              <span class="date">In stock</span>
+            </div>
+            <div class="description">
+              Bananas: Nature's Golden Goodness!
+            </div>
+          </div>
+          <div class="extra content">
+            <a class="ui button black">
+              <i class="cart icon"></i>
+              Add to cart
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.js" integrity="sha512-PD2QRjH0s7TFz8Oicpi4UFJBdKP0vFeYpmNPsEoNDHfG3QcGLTs8XUrkXWEQXX2Q0g+1oEwvow27TM2VfPdTxw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    $(document).ready(function() {
+      $('.ui.dropdown').dropdown();
+    });
+  </script>  
+</body>
+</html>
