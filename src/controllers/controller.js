@@ -1,14 +1,17 @@
 const {
   hashpassword,
+  comparePassword,
   signAccessToken,
   sanitizeRequest,
   signRefreshToken,
   verifyRefreshToken,
+  multerRouter
 } = require('../helper/index');
-const { multerRouter } = require('../middleware/middleware');
+const multer = require('multer');
 
 const User = require('../model/index');
 const Product = require('../model/product');
+
 
 const {
   RegistrationSchema,
@@ -94,10 +97,15 @@ exports.loginController = async (req, res) => {
       });
     }
 
-    const comparePassword = await comparePassword(
-      password,
-      userAccount.password,
-    );
+    const compare = await comparePassword(password, userAccount.password);
+
+    if (!compare) {
+      return res.status(400).header('Content-Type', 'application/json').json({
+        success: false,
+        message: 'Invalid email or password',
+        data: null,
+      });
+    }
 
     const accessToken = await signAccessToken(userAccount);
     if (!accessToken) {
