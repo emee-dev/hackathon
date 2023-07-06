@@ -5,13 +5,12 @@ const {
   sanitizeRequest,
   signRefreshToken,
   verifyRefreshToken,
-  multerRouter
+  multerRouter,
 } = require('../helper/index');
 const multer = require('multer');
 
 const User = require('../model/index');
 const Product = require('../model/product');
-
 
 const {
   RegistrationSchema,
@@ -233,7 +232,7 @@ exports.productUploadController = (req, res) => {
       if (err instanceof multer.MulterError) {
         // A Multer error occurred when uploading.
         console.log(err.message);
-        return res.status(422).json({
+        return res.status(422).header('Content-Type', 'application/json').json({
           success: false,
           message: 'Unprocessable Entity - File Upload Error',
           data: null,
@@ -241,14 +240,22 @@ exports.productUploadController = (req, res) => {
       } else if (err) {
         // An unknown error occurred when uploading.
         console.log(err.message);
-        return res.status(500).json({
+        return res.status(500).header('Content-Type', 'application/json').json({
           success: false,
           message: 'Internal Server Error - File Upload Error',
           data: null,
         });
       }
 
-      const { destination, filename } = req.file;
+      if (!req?.file) {
+        return res.status(400).header('Content-Type', 'application/json').json({
+          success: false,
+          message: 'No file uploaded',
+          data: null,
+        });
+      }
+
+      const { destination, filename } = req?.file;
 
       // save to database
       const newFile = new Product({
