@@ -24,6 +24,7 @@ exports.registerController = async (req, res) => {
     if (notValid) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: notValid, data: null });
     }
 
@@ -32,7 +33,7 @@ exports.registerController = async (req, res) => {
     const isRegistered = await User.findOne({ email });
 
     if (isRegistered) {
-      return res.status(401).json({
+      return res.status(401).header('Content-Type', 'application/json').json({
         status: false,
         message: 'Unauthorized, login to continue',
         data: null,
@@ -56,11 +57,13 @@ exports.registerController = async (req, res) => {
 
     res
       .status(200)
+      .header('Content-Type', 'application/json')
       .json({ success: true, message: 'Registration success', data: null });
   } catch (error) {
     console.log(error);
     res
       .status(500)
+      .header('Content-Type', 'application/json')
       .json({ success: false, message: 'Internal server error', data: null });
   }
 };
@@ -72,13 +75,14 @@ exports.loginController = async (req, res) => {
     if (notValid) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: notValid, data: null });
     }
     const { email, password } = value;
     const userAccount = await User.findOne({ email });
 
     if (!userAccount) {
-      return res.status(401).json({
+      return res.status(401).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Unauthorized, register to continue',
         data: null,
@@ -92,7 +96,7 @@ exports.loginController = async (req, res) => {
 
     const accessToken = await signAccessToken(userAccount);
     if (!accessToken) {
-      return res.status(500).json({
+      return res.status(500).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Internal server error',
         data: null,
@@ -101,39 +105,102 @@ exports.loginController = async (req, res) => {
 
     const refreshToken = await signRefreshToken(userAccount);
     if (!refreshToken) {
-      return res.status(500).json({
+      return res.status(500).header('Content-Type', 'application/json').json({
         success: false,
         message: 'Internal server error',
         data: null,
       });
     }
 
-    res.setHeader('Authorization', `Bearer ${accessToken}`);
-    res.status(200).json({
+    await User.updateOne(
+      {
+        _id: userAccount._id,
+      },
+      {
+        $set: {
+          refreshToken,
+        },
+      },
+    );
+
+    return res.status(200).header('Content-Type', 'application/json').json({
       success: true,
-      message: 'Login auth success',
-      accessToken,
+      message: 'Login successful',
+      data: {
+        accessToken,
+        refreshToken,
+      },
     });
   } catch (error) {
     console.log(error);
     res
       .status(500)
+      .header('Content-Type', 'application/json')
       .json({ success: false, message: 'Internal server error', data: null });
   }
 };
 
 exports.refreshTokenController = async (req, res) => {
-  const header = req.headers['Authorization'] || req.headers['authorization'];
+  const headers = req.headers['Authorization'] || req.headers['authorization'];
 
-  if (!header) {
-    return res.status(401).json({
+  if (!headers) {
+    return res.status(401).header('Content-Type', 'application/json').json({
       success: false,
       message: 'Unauthorized - Missing Authorization header',
       data: null,
     });
   }
 
-  const refreshToken = signRefreshToken();
+  const [bearer, token] = headers.split(' ');
+
+  if (bearer.toLowerCase() !== 'bearer' || !token) {
+    return res.status(401).header('Content-Type', 'application/json').json({
+      success: false,
+      message: 'Unauthorized - Invalid or Missing Bearer Token',
+      data: null,
+    });
+  }
+
+  const doesUserExist = await User.findOne({ refreshToken: token });
+  if (!doesUserExist) {
+    return res.status(401).header('Content-Type', 'application/json').json({
+      success: false,
+      message: 'Unauthorized - Invalid Refresh Token',
+      data: null,
+    });
+  }
+
+  const decoded = await verifyRefreshToken(token);
+  if (!decoded) {
+    return res.status(403).header('Content-Type', 'application/json').json({
+      success: false,
+      message: 'Forbidden - Invalid or Expired Refresh token',
+      data: null,
+    });
+  }
+
+  // Generate a new access token
+  const accessToken = await signAccessToken(doesUserExist);
+
+  // Generate a new refresh token
+  const newRefreshToken = await signRefreshToken(doesUserExist);
+
+  // Update the user's refresh token in the database
+  doesUserExist.refreshToken = newRefreshToken;
+  const result = await doesUserExist.save();
+
+  // Send the response with roles and the new access token
+  return res
+    .status(200)
+    .header('Content-Type', 'application/json')
+    .json({
+      success: true,
+      message: 'New access token and refresh token generated',
+      data: {
+        accessToken: accessToken,
+        refreshToken: newRefreshToken,
+      },
+    });
 };
 
 exports.productUploadController = (req, res) => {
@@ -146,12 +213,14 @@ exports.productUploadController = (req, res) => {
         console.log(err.message);
         return res
           .status(400)
+          .header('Content-Type', 'application/json')
           .send({ success: false, message: 'File Multer Error', data: null });
       } else if (err) {
         // An unknown error occurred when uploading.
         console.log(err.message);
         return res
           .status(400)
+          .header('Content-Type', 'application/json')
           .send({ success: false, message: 'File upload Error', data: null });
       }
 
@@ -168,11 +237,13 @@ exports.productUploadController = (req, res) => {
 
       res
         .status(200)
+        .header('Content-Type', 'application/json')
         .send({ success: true, message: 'file upload success', data: null });
     } catch (error) {
       console.log(error);
       res
         .status(500)
+        .header('Content-Type', 'application/json')
         .json({ success: false, message: 'Internal server error', data: null });
     }
   });
@@ -189,6 +260,7 @@ exports.archiveDownloadController = async (req, res) => {
     if (!sourceFile) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: 'No product was found', data: null });
     }
 
@@ -200,6 +272,7 @@ exports.archiveDownloadController = async (req, res) => {
     if (error) {
       return res
         .status(500)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: 'Error generating file', data: null });
     }
 
@@ -209,15 +282,16 @@ exports.archiveDownloadController = async (req, res) => {
       password: archivePassword,
     };
 
-    res.status(200).json({
+    res.status(200).header('Content-Type', 'application/json').json({
       status: true,
-      message: 'Archive if ready for download',
+      message: 'Archive is ready for download',
       data: response,
     });
   } catch (error) {
     console.log(error);
     res
       .status(500)
+      .header('Content-Type', 'application/json')
       .json({ status: false, message: 'Internal server error', data: null });
   }
 };
@@ -230,6 +304,7 @@ exports.paginatedProductListController = async (req, res) => {
     if (notValid) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: false, message: notValid, data: null });
     }
 
@@ -242,6 +317,7 @@ exports.paginatedProductListController = async (req, res) => {
     if (!products) {
       return res
         .status(400)
+        .header('Content-Type', 'application/json')
         .json({ status: true, message: 'No product found', data: null });
     }
 
@@ -250,7 +326,7 @@ exports.paginatedProductListController = async (req, res) => {
       pageCount: productCount,
     };
 
-    res.status(200).json({
+    res.status(200).header('Content-Type', 'application/json').json({
       status: true,
       message: 'Paginated list of products',
       data: response,
@@ -259,6 +335,7 @@ exports.paginatedProductListController = async (req, res) => {
     console.log(error);
     res
       .status(500)
+      .header('Content-Type', 'application/json')
       .json({ status: false, message: 'Internal server error', data: null });
   }
 };
