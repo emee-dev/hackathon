@@ -2,10 +2,10 @@
 	"name": "omon-project",
 	"version": "1.0.0",
 	"description": "",
-	"main": "server.js",
+	"main": "cluster.js",
 	"scripts": {
-		"start": "node server.js",
-		"dev": "cross-env NODE_ENV=development nodemon server.js"
+		"start": "node cluster.js",
+		"dev": "cross-env NODE_ENV=development nodemon cluster.js"
 	},
 	"keywords": [],
 	"author": "",

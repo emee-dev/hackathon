@@ -113,9 +113,8 @@ Make sure to set up the following environment variables for CodeVault to work co
 
 - ACCESS_TOKEN_SECRET= `<your_access_token_secret>`
 
-##### License Secret
+- REFRESH_TOKEN_SECRET= `<your_access_token_secret>`
 
-- LICENSE_SECRET= `<your_license_secret>`
 
 ##### ConvertApi Config
 
